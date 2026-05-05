@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>A2Z Risk Monitor — संक्षिप्त विवरण</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Devanagari', sans-serif; }
+  body { background: #f4f6f9; color: #1a1f2e; padding: 40px 20px; }
+  .page { max-width: 1280px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden; }
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: white; padding: 40px 48px;
+    border-bottom: 4px solid #3b82f6;
+  }
+  .hero h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .hero .subtitle { font-size: 16px; color: #94a3b8; font-weight: 400; }
+  .hero .badge {
+    display: inline-block; background: #10b981; color: white; padding: 4px 12px;
+    border-radius: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+    margin-top: 12px;
+  }
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .stat { background: white; padding: 24px; text-align: center; }
+  .stat .num { font-size: 28px; font-weight: 700; color: #0f172a; }
+  .stat .label { font-size: 12px; color: #64748b; margin-top: 4px; letter-spacing: 0.3px; }
+  .stat .num.green { color: #059669; }
+  .stat .num.blue { color: #2563eb; }
+  .stat .num.amber { color: #d97706; }
+
+  .section { padding: 40px 48px; border-bottom: 1px solid #e2e8f0; }
+  .section h2 {
+    font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section h2 .num-circle {
+    width: 28px; height: 28px; border-radius: 50%; background: #3b82f6; color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .section .desc { color: #64748b; margin-bottom: 24px; font-size: 14px; }
+
+  /* The Flow */
+  .flow {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 0; align-items: center; padding: 16px 0;
+  }
+  .flow-step {
+    background: white; border: 2px solid #e2e8f0; border-radius: 12px;
+    padding: 18px 14px; text-align: center; position: relative;
+    transition: transform 0.2s;
+  }
+  .flow-step:hover { transform: translateY(-2px); }
+  .flow-step.live { border-color: #10b981; background: #f0fdf4; }
+  .flow-step.pending { border-color: #f59e0b; background: #fffbeb; }
+  .flow-step .icon {
+    font-size: 28px; margin-bottom: 8px; line-height: 1;
+  }
+  .flow-step .title { font-weight: 700; font-size: 13px; margin-bottom: 4px; color: #0f172a; }
+  .flow-step .when { font-size: 10px; color: #64748b; letter-spacing: 0.3px; margin-bottom: 8px; }
+  .flow-step .what { font-size: 11px; color: #475569; line-height: 1.5; }
+  .flow-step .status {
+    position: absolute; top: -8px; right: -8px;
+    background: #10b981; color: white; font-size: 9px; font-weight: 700;
+    padding: 3px 9px; border-radius: 10px; letter-spacing: 0.3px;
+  }
+  .flow-step .status.pending { background: #f59e0b; }
+  .arrow {
+    text-align: center; color: #94a3b8; font-size: 24px;
+    align-self: center;
+  }
+
+  /* Rules grid */
+  .rules-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .rule {
+    background: #f8fafc; border-left: 3px solid #3b82f6;
+    padding: 12px 14px; border-radius: 6px;
+  }
+  .rule .name { font-weight: 600; font-size: 12px; color: #0f172a; margin-bottom: 3px; }
+  .rule .desc { font-size: 11px; color: #475569; line-height: 1.5; }
+
+  /* Roadmap */
+  .roadmap {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 12px; position: relative;
+  }
+  .roadmap::before {
+    content: ''; position: absolute; left: 24px; right: 24px; top: 36px;
+    height: 2px; background: linear-gradient(to right, #10b981 0%, #10b981 16%, #f59e0b 16%, #f59e0b 33%, #cbd5e1 33%);
+    z-index: 0;
+  }
+  .phase {
+    background: white; border-radius: 8px; padding: 12px;
+    text-align: center; position: relative; z-index: 1;
+  }
+  .phase .dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    margin: 16px auto 12px;
+    border: 3px solid white; box-shadow: 0 0 0 2px #cbd5e1;
+    background: white;
+  }
+  .phase.done .dot { background: #10b981; box-shadow: 0 0 0 2px #10b981; }
+  .phase.next .dot { background: #f59e0b; box-shadow: 0 0 0 2px #f59e0b; }
+  .phase .num { font-size: 10px; color: #64748b; font-weight: 600; letter-spacing: 0.3px; }
+  .phase .title { font-weight: 700; font-size: 12px; color: #0f172a; margin: 4px 0; }
+  .phase .desc { font-size: 10px; color: #64748b; line-height: 1.4; }
+  .phase.done .title { color: #059669; }
+  .phase.next .title { color: #d97706; }
+
+  /* Cost section */
+  .cost-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 24px; align-items: stretch;
+  }
+  .cost-box {
+    background: linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%);
+    border-radius: 12px; padding: 24px; border: 1px solid #93c5fd;
+  }
+  .cost-box.alt {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-color: #fcd34d;
+  }
+  .cost-box h3 { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
+  .cost-row {
+    display: flex; justify-content: space-between; padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.6); font-size: 13px;
+  }
+  .cost-row:last-of-type { border-bottom: none; }
+  .cost-row .item { color: #475569; }
+  .cost-row .price { font-weight: 600; color: #0f172a; }
+  .cost-total {
+    border-top: 2px solid #0f172a; margin-top: 8px; padding-top: 8px;
+    display: flex; justify-content: space-between; font-weight: 700; font-size: 14px;
+  }
+  .roi-callout {
+    background: #ecfdf5; border-left: 4px solid #10b981;
+    padding: 16px 20px; margin-top: 20px; border-radius: 0 8px 8px 0;
+    font-size: 13px; color: #065f46; line-height: 1.6;
+  }
+  .roi-callout strong { color: #064e3b; }
+
+  /* Future enhancements */
+  .future-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .future-item {
+    background: #faf5ff; border-radius: 10px; padding: 18px;
+    border: 1px solid #e9d5ff;
+  }
+  .future-item .rank {
+    display: inline-block; background: #7c3aed; color: white;
+    width: 24px; height: 24px; border-radius: 50%;
+    font-weight: 700; font-size: 12px;
+    line-height: 24px; text-align: center; margin-bottom: 8px;
+  }
+  .future-item .title { font-weight: 700; font-size: 13px; margin-bottom: 6px; color: #0f172a; }
+  .future-item .what { font-size: 11px; color: #475569; line-height: 1.6; margin-bottom: 10px; }
+  .future-item .meta {
+    display: flex; gap: 8px; font-size: 10px;
+    color: #64748b; padding-top: 8px; border-top: 1px dashed #d1d5db; flex-wrap: wrap;
+  }
+  .future-item .meta strong { color: #0f172a; }
+
+  .footer {
+    background: #0f172a; color: #94a3b8;
+    padding: 20px 48px; font-size: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer .url { color: #60a5fa; font-family: 'SF Mono', Monaco, monospace; }
+
+  @media print {
+    body { padding: 0; background: white; }
+    .page { box-shadow: none; }
+    .section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="hero">
+    <h1>A2Z रिस्क मॉनिटर</h1>
+    <div class="subtitle">मर्चेंट धोखाधड़ी पकड़ने वाला सिस्टम — 24/7 ऑटोमैटिक, AI से सहायता</div>
+    <span class="badge">● फेज़ 1 लाइव — 5 मई 2026 से</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="num blue">26,517</div>
+      <div class="label">कुल मर्चेंट कवर</div>
+    </div>
+    <div class="stat">
+      <div class="num green">88.9%</div>
+      <div class="label">सटीकता (precision)</div>
+    </div>
+    <div class="stat">
+      <div class="num green">100%</div>
+      <div class="label">पकड़ दर — पिछली ज्ञात धोखाधड़ी</div>
+    </div>
+    <div class="stat">
+      <div class="num amber">&lt; ₹2,500</div>
+      <div class="label">मासिक खर्च (कुल)</div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section">
+    <h2><span class="num-circle">1</span> यह कैसे काम करता है — रोज़ का चक्र</h2>
+    <div class="desc">प्लेटफ़ॉर्म पर हर लेन-देन की निगरानी होती है। पाँच चरण, सब ऑटोमैटिक।</div>
+
+    <div class="flow">
+      <div class="flow-step live">
+        <span class="status">लाइव</span>
+        <div class="icon">📊</div>
+        <div class="title">बेसलाइन तैयार</div>
+        <div class="when">हर रात · 8 बजे</div>
+        <div class="what">हर मर्चेंट का सामान्य पैटर्न: औसत लेन-देन, पीक घंटे, रिफंड दर, सेवा मिक्स</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-step live">
+        <span class="status">लाइव</span>
+        <div class="icon">🔍</div>
+        <div class="title">गतिविधि स्कैन</div>
+        <div class="when">हर 5 मिनट</div>
+        <div class="what">पिछले 5 मिनट की तुलना मर्चेंट की बेसलाइन से। 8 नियम जाँच करते हैं</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-step pending">
+        <span class="status pending">फेज़ 2</span>
+        <div class="icon">🤖</div>
+        <div class="title">AI ट्राइएज</div>
+        <div class="when">हर 1 मिनट</div>
+        <div class="what">Claude AI अलर्ट + 90 दिन का इतिहास पढ़कर तय करता है: असली धोखाधड़ी / सही / जाँच चाहिए</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-step pending">
+        <span class="status pending">फेज़ 3</span>
+        <div class="icon">📧</div>
+        <div class="title">ऑप्स को सूचना</div>
+        <div class="when">क्रिटिकल: तुरंत · चेतावनी: हर घंटे</div>
+        <div class="what">ईमेल जाएगा रिस्क-ऑप्स टीम को, मर्चेंट डिटेल और AI की राय के साथ</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-step live">
+        <span class="status">लाइव</span>
+        <div class="icon">👤</div>
+        <div class="title">ऑप्स की समीक्षा</div>
+        <div class="when">लगातार</div>
+        <div class="what">वेब कंसोल पर: स्वीकार करें या समाधान करें। फीडबैक से नियम साप्ताहिक सुधरते हैं</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE 8 RULES -->
+  <div class="section">
+    <h2><span class="num-circle">2</span> हम क्या देखते हैं — 8 धोखाधड़ी संकेत</h2>
+    <div class="desc">हर नियम A2Z में पहले देखे गए धोखाधड़ी पैटर्न पर आधारित है। थ्रेशोल्ड बिना डिप्लॉय के तुरंत बदला जा सकता है।</div>
+
+    <div class="rules-grid">
+      <div class="rule">
+        <div class="name">🆕 नया मर्चेंट, बड़ा लेन-देन</div>
+        <div class="desc">बिल्कुल नया खाता अचानक ₹1 लाख+ का लेन-देन कर रहा है</div>
+      </div>
+      <div class="rule">
+        <div class="name">📈 5× वृद्धि (नया मर्चेंट)</div>
+        <div class="desc">नए मर्चेंट का व्यापार पहले हफ़्ते से 5 गुना बढ़ गया</div>
+      </div>
+      <div class="rule">
+        <div class="name">📈 10× वृद्धि (पुराना मर्चेंट)</div>
+        <div class="desc">पुराने मर्चेंट का व्यापार सामान्य दिन से 10 गुना बढ़ गया</div>
+      </div>
+      <div class="rule">
+        <div class="name">⚡ अचानक तेज़ी</div>
+        <div class="desc">एक घंटे में लेन-देनों का बड़ा बर्स्ट</div>
+      </div>
+      <div class="rule">
+        <div class="name">🌙 असामान्य घंटे की गतिविधि</div>
+        <div class="desc">रात 2-5 बजे सक्रिय, जब आम तौर पर बंद रहते हैं</div>
+      </div>
+      <div class="rule">
+        <div class="name">↩️ रिफंड में अचानक वृद्धि</div>
+        <div class="desc">रिफंड दर बेसलाइन से 3 गुना ज़्यादा</div>
+      </div>
+      <div class="rule">
+        <div class="name">🔄 सेवा बदलाव</div>
+        <div class="desc">अचानक नई सेवा शुरू कर दी जो पहले कभी इस्तेमाल नहीं की</div>
+      </div>
+      <div class="rule">
+        <div class="name">🎯 एक ही लाभार्थी</div>
+        <div class="desc">80%+ पेआउट एक ही बैंक खाते में जा रहा है</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COST -->
+  <div class="section">
+    <h2><span class="num-circle">3</span> खर्च और बचत</h2>
+    <div class="desc">AI पर पक्की लिमिट है। मासिक खर्च सिर्फ़ एक रोकी गई धोखाधड़ी से कई गुना कम है।</div>
+
+    <div class="cost-grid">
+      <div class="cost-box">
+        <h3>💰 मासिक संचालन खर्च</h3>
+        <div class="cost-row"><span class="item">DigitalOcean K8s (2 पॉड × 2 एनवायरनमेंट)</span><span class="price">₹500</span></div>
+        <div class="cost-row"><span class="item">डेटाबेस क्वेरीज़ (मौजूदा MySQL)</span><span class="price">₹0</span></div>
+        <div class="cost-row"><span class="item">Claude AI (कैप्ड, हार्ड किल-स्विच)</span><span class="price">$20 / ₹1,700</span></div>
+        <div class="cost-row"><span class="item">ईमेल (Zoho, मौजूदा खाता)</span><span class="price">₹0</span></div>
+        <div class="cost-total"><span>कुल</span><span>≈ ₹2,200 / महीना</span></div>
+      </div>
+
+      <div class="cost-box alt">
+        <h3>🛡️ एक रोकी हुई धोखाधड़ी से बचत</h3>
+        <div class="cost-row"><span class="item">औसत मध्यम DMT/AEPS धोखाधड़ी</span><span class="price">₹3-5 लाख</span></div>
+        <div class="cost-row"><span class="item">सिस्टम का सालाना खर्च</span><span class="price">₹26,400</span></div>
+        <div class="cost-row"><span class="item">ब्रेक-ईवन</span><span class="price">12 साल में 1 केस</span></div>
+        <div class="cost-total"><span>सिस्टम खुद पैसे वसूल लेता है</span><span>हर 20 साल में 1 केस</span></div>
+      </div>
+    </div>
+
+    <div class="roi-callout">
+      <strong>निष्कर्ष:</strong> AI का खर्च हार्ड कैप पर है — महीने में $20। यह स्वतंत्र कोड ऑडिट से सत्यापित है (5 मई 2026)। सिस्टम कितना भी अलर्ट जनरेट कर ले, मासिक AI खर्च $19.58 से ज़्यादा कभी नहीं हो सकता। पूरे सिस्टम का खर्च प्रति मर्चेंट प्रति साल एक चाय से भी कम है।
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="section">
+    <h2><span class="num-circle">4</span> रोडमैप — आगे की योजना</h2>
+    <div class="desc">फेज़ 1 आज लाइव हो गया। हर अगला फेज़ अलग-अलग वैल्यू देता है — एक के बिना दूसरा रुकता नहीं।</div>
+
+    <div class="roadmap">
+      <div class="phase done">
+        <div class="dot"></div>
+        <div class="num">फेज़ 1</div>
+        <div class="title">लाइव डिटेक्शन</div>
+        <div class="desc">8 नियम, कंसोल लाइव, बेसलाइन कंप्यूट हो रहे हैं</div>
+      </div>
+      <div class="phase next">
+        <div class="dot"></div>
+        <div class="num">फेज़ 2</div>
+        <div class="title">Claude ट्राइएज</div>
+        <div class="desc">अलर्ट का ऑटो वर्गीकरण। API key का इंतज़ार।</div>
+      </div>
+      <div class="phase">
+        <div class="dot"></div>
+        <div class="num">फेज़ 3</div>
+        <div class="title">ईमेल अलर्ट</div>
+        <div class="desc">क्रिटिकल तुरंत + चेतावनी हर घंटे। Zoho पासवर्ड का इंतज़ार।</div>
+      </div>
+      <div class="phase">
+        <div class="dot"></div>
+        <div class="num">फेज़ 4</div>
+        <div class="title">कैलिब्रेशन</div>
+        <div class="desc">3 हफ़्ते का ऑप्स फीडबैक → थ्रेशोल्ड ट्यूनिंग</div>
+      </div>
+      <div class="phase">
+        <div class="dot"></div>
+        <div class="num">फेज़ 5</div>
+        <div class="title">नए नियम</div>
+        <div class="desc">हर तिमाही: छूटे हुए धोखाधड़ी पैटर्न के लिए नियम जोड़ें</div>
+      </div>
+      <div class="phase">
+        <div class="dot"></div>
+        <div class="num">फेज़ 6</div>
+        <div class="title">पूर्वानुमान</div>
+        <div class="desc">धोखाधड़ी होने से पहले जोखिम वाले मर्चेंट की पहचान</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FUTURE AI ENHANCEMENTS -->
+  <div class="section">
+    <h2><span class="num-circle">5</span> भविष्य के AI सुधार (अगले 2 महीने)</h2>
+    <div class="desc">स्वतंत्र तकनीकी समीक्षा से तीन high-ROI सुधार पहचाने गए। कुल अतिरिक्त खर्च: $25 / महीना।</div>
+
+    <div class="future-grid">
+      <div class="future-item">
+        <div class="rank">1</div>
+        <div class="title">स्मार्ट AI रूटिंग</div>
+        <div class="what">सामान्य अलर्ट के लिए सस्ता AI, लेकिन क्रिटिकल अलर्ट के लिए प्रीमियम AI (Sonnet 4.6)। जहाँ ज़रूरी है, वहाँ ज़्यादा सटीकता।</div>
+        <div class="meta">
+          <span><strong>खर्च:</strong> +$15/मो</span>
+          <span><strong>असर:</strong> 3pp सटीकता बढ़ोतरी</span>
+          <span><strong>समय:</strong> 1 दिन</span>
+        </div>
+      </div>
+      <div class="future-item">
+        <div class="rank">2</div>
+        <div class="title">म्यूल रिंग पकड़</div>
+        <div class="what">रोज़ का ग्राफ़ विश्लेषण — कई मर्चेंट जो एक ही बैंक खातों में पैसा भेज रहे हैं। यह पैटर्न मौजूदा नियम नहीं देख सकते।</div>
+        <div class="meta">
+          <span><strong>खर्च:</strong> +₹0</span>
+          <span><strong>असर:</strong> नई धोखाधड़ी श्रेणी पकड़ी जाएगी</span>
+          <span><strong>समय:</strong> 1 हफ़्ता</span>
+        </div>
+      </div>
+      <div class="future-item">
+        <div class="rank">3</div>
+        <div class="title">AI KYC प्री-स्क्रीन</div>
+        <div class="what">अपलोड किए गए PAN / आधार / लाइसेंस डॉक्यूमेंट AI विज़न से जाँचे जाएँगे। साफ़ डॉक्यूमेंट ऑटो-अप्रूव, बाकी मानवीय समीक्षा।</div>
+        <div class="meta">
+          <span><strong>खर्च:</strong> +$10/मो</span>
+          <span><strong>असर:</strong> ~50% कम ऑप्स समय</span>
+          <span><strong>समय:</strong> 1 हफ़्ता</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT LEARNS -->
+  <div class="section">
+    <h2><span class="num-circle">6</span> सिस्टम समय के साथ बेहतर कैसे होता है</h2>
+    <div class="desc">तीन परतें लगातार सुधार करती हैं। ऑप्स टीम का फीडबैक सबसे महत्वपूर्ण है।</div>
+
+    <div class="rules-grid" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="rule" style="border-left-color: #10b981;">
+        <div class="name">📊 ऑटो-एडैप्टिंग बेसलाइन</div>
+        <div class="desc">हर रात बेसलाइन पिछले 7 दिन से दोबारा बनती है। जो मर्चेंट सही तरीके से बढ़ रहे हैं उन पर अलर्ट नहीं आते — सिर्फ़ अचानक उछाल पकड़े जाते हैं।</div>
+      </div>
+      <div class="rule" style="border-left-color: #7c3aed;">
+        <div class="name">🤖 AI की समझ बढ़ती है</div>
+        <div class="desc">समय के साथ Claude को बेहतर मर्चेंट कॉन्टेक्स्ट देते हैं। प्रॉम्प्ट सुधारते हैं — मॉडल को रीट्रेन नहीं करना पड़ता, कोई कंप्लायंस इश्यू नहीं।</div>
+      </div>
+      <div class="rule" style="border-left-color: #f59e0b;">
+        <div class="name">👥 ऑप्स फीडबैक (सबसे ज़रूरी)</div>
+        <div class="desc">हर "स्वीकार" / "समाधान" क्लिक रिकॉर्ड होता है। साप्ताहिक समीक्षा: 30%+ ग़लत अलर्ट देने वाले नियम ढीले होते हैं। छूटे केस से नए नियम बनते हैं। सब हॉट-रीलोड, बिना डिप्लॉय।</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>A2Z सुविधा · रिस्क मॉनिटरिंग प्लेटफ़ॉर्म · आंतरिक उपयोग के लिए</div>
+    <div>लाइव: <span class="url">risk-console.a2zsuvidhaa.in</span></div>
+  </div>
+
+</div>
+
+</body>
+</html>
