@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>A2Z Risk Monitor — Executive Overview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  body { background: #f4f6f9; color: #1a1f2e; padding: 40px 20px; }
+  .page { max-width: 1280px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden; }
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: white; padding: 40px 48px;
+    border-bottom: 4px solid #3b82f6;
+  }
+  .hero h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .hero .subtitle { font-size: 16px; color: #94a3b8; font-weight: 400; }
+  .hero .badge {
+    display: inline-block; background: #10b981; color: white; padding: 4px 12px;
+    border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+    text-transform: uppercase; margin-top: 12px;
+  }
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .stat { background: white; padding: 24px; text-align: center; }
+  .stat .num { font-size: 28px; font-weight: 700; color: #0f172a; }
+  .stat .label { font-size: 12px; color: #64748b; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat .num.green { color: #059669; }
+  .stat .num.blue { color: #2563eb; }
+  .stat .num.amber { color: #d97706; }
+
+  .section { padding: 40px 48px; border-bottom: 1px solid #e2e8f0; }
+  .section h2 {
+    font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section h2 .num-circle {
+    width: 28px; height: 28px; border-radius: 50%; background: #3b82f6; color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .section .desc { color: #64748b; margin-bottom: 24px; font-size: 14px; }
+
+  /* The Flow */
+  .flow {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 0; align-items: center; padding: 16px 0;
+  }
+  .flow-step {
+    background: white; border: 2px solid #e2e8f0; border-radius: 12px;
+    padding: 18px 14px; text-align: center; position: relative;
+    transition: transform 0.2s;
+  }
+  .flow-step:hover { transform: translateY(-2px); }
+  .flow-step.live { border-color: #10b981; background: #f0fdf4; }
+  .flow-step.pending { border-color: #f59e0b; background: #fffbeb; }
+  .flow-step .icon {
+    font-size: 28px; margin-bottom: 8px; line-height: 1;
+  }
+  .flow-step .title { font-weight: 700; font-size: 13px; margin-bottom: 4px; color: #0f172a; }
+  .flow-step .when { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .flow-step .what { font-size: 11px; color: #475569; line-height: 1.4; }
+  .flow-step .status {
+    position: absolute; top: -8px; right: -8px;
+    background: #10b981; color: white; font-size: 9px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px; letter-spacing: 0.5px;
+  }
+  .flow-step .status.pending { background: #f59e0b; }
+  .arrow {
+    text-align: center; color: #94a3b8; font-size: 24px;
+    align-self: center;
+  }
+
+  /* Rules grid */
+  .rules-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .rule {
+    background: #f8fafc; border-left: 3px solid #3b82f6;
+    padding: 12px 14px; border-radius: 6px;
+  }
+  .rule .name { font-weight: 600; font-size: 12px; color: #0f172a; margin-bottom: 3px; }
+  .rule .desc { font-size: 11px; color: #475569; line-height: 1.4; }
+
+  /* Roadmap */
+  .roadmap {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 12px; position: relative;
+  }
+  .roadmap::before {
+    content: ''; position: absolute; left: 24px; right: 24px; top: 36px;
+    height: 2px; background: linear-gradient(to right, #10b981 0%, #10b981 16%, #f59e0b 16%, #f59e0b 33%, #cbd5e1 33%);
+    z-index: 0;
+  }
+  .phase {
+    background: white; border-radius: 8px; padding: 12px;
+    text-align: center; position: relative; z-index: 1;
+  }
+  .phase .dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    margin: 16px auto 12px;
+    border: 3px solid white; box-shadow: 0 0 0 2px #cbd5e1;
+    background: white;
+  }
+  .phase.done .dot { background: #10b981; box-shadow: 0 0 0 2px #10b981; }
+  .phase.next .dot { background: #f59e0b; box-shadow: 0 0 0 2px #f59e0b; }
+  .phase .num { font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .phase .title { font-weight: 700; font-size: 12px; color: #0f172a; margin: 4px 0; }
+  .phase .desc { font-size: 10px; color: #64748b; line-height: 1.3; }
+  .phase.done .title { color: #059669; }
+  .phase.next .title { color: #d97706; }
+
+  /* Cost section */
+  .cost-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 24px; align-items: stretch;
+  }
+  .cost-box {
+    background: linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%);
+    border-radius: 12px; padding: 24px; border: 1px solid #93c5fd;
+  }
+  .cost-box.alt {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-color: #fcd34d;
+  }
+  .cost-box h3 { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
+  .cost-row {
+    display: flex; justify-content: space-between; padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.6); font-size: 13px;
+  }
+  .cost-row:last-of-type { border-bottom: none; }
+  .cost-row .item { color: #475569; }
+  .cost-row .price { font-weight: 600; color: #0f172a; }
+  .cost-total {
+    border-top: 2px solid #0f172a; margin-top: 8px; padding-top: 8px;
+    display: flex; justify-content: space-between; font-weight: 700; font-size: 14px;
+  }
+  .roi-callout {
+    background: #ecfdf5; border-left: 4px solid #10b981;
+    padding: 16px 20px; margin-top: 20px; border-radius: 0 8px 8px 0;
+    font-size: 13px; color: #065f46;
+  }
+  .roi-callout strong { color: #064e3b; }
+
+  /* Future enhancements */
+  .future-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .future-item {
+    background: #faf5ff; border-radius: 10px; padding: 18px;
+    border: 1px solid #e9d5ff;
+  }
+  .future-item .rank {
+    display: inline-block; background: #7c3aed; color: white;
+    width: 24px; height: 24px; border-radius: 50%;
+    font-weight: 700; font-size: 12px;
+    line-height: 24px; text-align: center; margin-bottom: 8px;
+  }
+  .future-item .title { font-weight: 700; font-size: 13px; margin-bottom: 6px; color: #0f172a; }
+  .future-item .what { font-size: 11px; color: #475569; line-height: 1.5; margin-bottom: 10px; }
+  .future-item .meta {
+    display: flex; gap: 8px; font-size: 10px;
+    color: #64748b; padding-top: 8px; border-top: 1px dashed #d1d5db;
+  }
+  .future-item .meta strong { color: #0f172a; }
+
+  .footer {
+    background: #0f172a; color: #94a3b8;
+    padding: 20px 48px; font-size: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer .url { color: #60a5fa; font-family: 'SF Mono', Monaco, monospace; }
+
+  @media print {
+    body { padding: 0; background: white; }
+    .page { box-shadow: none; }
+    .section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="hero">
+    <h1>A2Z Risk Monitor</h1>
+    <div class="subtitle">Merchant fraud detection — automatic, 24/7, AI-assisted</div>
+    <span class="badge">● Phase 1 Live in Production · 5 May 2026</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="num blue">26,517</div>
+      <div class="label">Merchants Covered</div>
+    </div>
+    <div class="stat">
+      <div class="num green">88.9%</div>
+      <div class="label">Detection Precision</div>
+    </div>
+    <div class="stat">
+      <div class="num green">100%</div>
+      <div class="label">Recall (catches all known fraud)</div>
+    </div>
+    <div class="stat">
+      <div class="num amber">5 min</div>
+      <div class="label">Detection Latency</div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section">
+    <h2><span class="num-circle">1</span> How it works — the daily cycle</h2>
+    <div class="desc">Every transaction across the platform is screened. Five stages, fully automated.</div>
+
+    <div class="flow">
+      <div class="flow-step live">
+        <span class="status">LIVE</span>
+        <div class="icon">📊</div>
+        <div class="title">Build Baseline</div>
+        <div class="when">Every night · 8 PM</div>
+        <div class="what">For each merchant: avg volume, peak hours, refund rate, service mix</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-step live">
+        <span class="status">LIVE</span>
+        <div class="icon">🔍</div>
+        <div class="title">Scan Activity</div>
+        <div class="when">Every 5 minutes</div>
+        <div class="what">Compare last 5 min vs each merchant's baseline. 8 rules trigger if abnormal</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-step pending">
+        <span class="status pending">PHASE 2</span>
+        <div class="icon">🤖</div>
+        <div class="title">AI Triage</div>
+        <div class="when">Every 1 minute</div>
+        <div class="what">Claude AI reads alert + 90-day history, classifies REAL FRAUD / LEGIT / NEEDS HUMAN</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-step pending">
+        <span class="status pending">PHASE 3</span>
+        <div class="icon">📧</div>
+        <div class="title">Notify Ops</div>
+        <div class="when">Critical: instant · Warn: hourly</div>
+        <div class="what">Email goes to risk-ops with merchant detail + Claude's reasoning</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="flow-step live">
+        <span class="status">LIVE</span>
+        <div class="icon">👤</div>
+        <div class="title">Ops Reviews</div>
+        <div class="when">Continuous</div>
+        <div class="what">Web console: Acknowledge or Resolve. Feedback retrains thresholds weekly.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE 8 RULES -->
+  <div class="section">
+    <h2><span class="num-circle">2</span> What we watch for — 8 fraud signals</h2>
+    <div class="desc">Each rule encodes a fraud pattern A2Z has historically seen. Thresholds tunable in real-time without redeploys.</div>
+
+    <div class="rules-grid">
+      <div class="rule">
+        <div class="name">🆕 New Merchant Going Big</div>
+        <div class="desc">Brand-new account suddenly pushing ₹1L+</div>
+      </div>
+      <div class="rule">
+        <div class="name">📈 5× Growth (new)</div>
+        <div class="desc">New merchant doing 5× their first-week volume</div>
+      </div>
+      <div class="rule">
+        <div class="name">📈 10× Growth (existing)</div>
+        <div class="desc">Established merchant doing 10× their normal day</div>
+      </div>
+      <div class="rule">
+        <div class="name">⚡ Velocity Burst</div>
+        <div class="desc">Huge transaction spike inside one hour</div>
+      </div>
+      <div class="rule">
+        <div class="name">🌙 Off-Hours Activity</div>
+        <div class="desc">Active 2-5 AM when normally inactive</div>
+      </div>
+      <div class="rule">
+        <div class="name">↩️ Refund Storm</div>
+        <div class="desc">Refund rate suddenly 3× the baseline</div>
+      </div>
+      <div class="rule">
+        <div class="name">🔄 Service Drift</div>
+        <div class="desc">Switches to a service type they never used</div>
+      </div>
+      <div class="rule">
+        <div class="name">🎯 Single Beneficiary</div>
+        <div class="desc">80%+ of payouts to one bank account</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="section">
+    <h2><span class="num-circle">3</span> Roadmap — where we're going</h2>
+    <div class="desc">Phase 1 went live today. Each subsequent phase is independent and ships value on its own.</div>
+
+    <div class="roadmap">
+      <div class="phase done">
+        <div class="dot"></div>
+        <div class="num">Phase 1</div>
+        <div class="title">Live Detection</div>
+        <div class="desc">8 rules, console live, baselines computing</div>
+      </div>
+      <div class="phase next">
+        <div class="dot"></div>
+        <div class="num">Phase 2</div>
+        <div class="title">Claude Triage</div>
+        <div class="desc">Auto-classify alerts. Pending API key.</div>
+      </div>
+      <div class="phase">
+        <div class="dot"></div>
+        <div class="num">Phase 3</div>
+        <div class="title">Email Alerts</div>
+        <div class="desc">Critical instant + hourly digest. Pending Zoho password.</div>
+      </div>
+      <div class="phase">
+        <div class="dot"></div>
+        <div class="num">Phase 4</div>
+        <div class="title">Calibration</div>
+        <div class="desc">3 weeks of ops feedback → threshold tuning</div>
+      </div>
+      <div class="phase">
+        <div class="dot"></div>
+        <div class="num">Phase 5</div>
+        <div class="title">New Rules</div>
+        <div class="desc">Quarterly: cover fraud patterns we miss</div>
+      </div>
+      <div class="phase">
+        <div class="dot"></div>
+        <div class="num">Phase 6</div>
+        <div class="title">Predictive</div>
+        <div class="desc">Score at-risk merchants before fraud occurs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FUTURE AI ENHANCEMENTS -->
+  <div class="section">
+    <h2><span class="num-circle">4</span> Future AI enhancements (next 2 months)</h2>
+    <div class="desc">Three high-ROI additions identified by independent technical review. Total incremental cost: $25/month.</div>
+
+    <div class="future-grid">
+      <div class="future-item">
+        <div class="rank">1</div>
+        <div class="title">Smart AI Routing</div>
+        <div class="what">Use cheap AI for routine alerts, premium AI (Sonnet 4.6) only for CRITICAL alerts. Higher accuracy where it matters most.</div>
+        <div class="meta">
+          <span><strong>Cost:</strong> +$15/mo</span>
+          <span><strong>Impact:</strong> 3pp precision lift on critical fraud</span>
+          <span><strong>Effort:</strong> 1 day</span>
+        </div>
+      </div>
+      <div class="future-item">
+        <div class="rank">2</div>
+        <div class="title">Mule Ring Detection</div>
+        <div class="what">Daily graph analysis to find fraud rings — multiple merchants funnelling money to the same bank accounts. A pattern current rules cannot see.</div>
+        <div class="meta">
+          <span><strong>Cost:</strong> +₹0</span>
+          <span><strong>Impact:</strong> New category of fraud caught</span>
+          <span><strong>Effort:</strong> 1 week</span>
+        </div>
+      </div>
+      <div class="future-item">
+        <div class="rank">3</div>
+        <div class="title">AI KYC Pre-Screen</div>
+        <div class="what">AI vision examines uploaded PAN / Aadhaar / business licence docs at onboarding. Auto-approves clean ones; humans review the rest.</div>
+        <div class="meta">
+          <span><strong>Cost:</strong> +$10/mo</span>
+          <span><strong>Impact:</strong> ~50% less ops review time</span>
+          <span><strong>Effort:</strong> 1 week</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT LEARNS -->
+  <div class="section">
+    <h2><span class="num-circle">5</span> How it gets better over time</h2>
+    <div class="desc">Three layers of continuous improvement. Ops feedback drives the most important one.</div>
+
+    <div class="rules-grid" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="rule" style="border-left-color: #10b981;">
+        <div class="name">📊 Auto-adapting baselines</div>
+        <div class="desc">Every night, baselines rebuild from last 7 days. Merchants who legitimately grow won't keep firing alerts — only sudden jumps trigger.</div>
+      </div>
+      <div class="rule" style="border-left-color: #7c3aed;">
+        <div class="name">🤖 AI judgment refines</div>
+        <div class="desc">Claude reads richer merchant context as we add data. We tune the prompt — no model retraining needed, no compliance issue.</div>
+      </div>
+      <div class="rule" style="border-left-color: #f59e0b;">
+        <div class="name">👥 Ops feedback (most important)</div>
+        <div class="desc">Every "Acknowledge" / "Resolve" action is recorded. Weekly review: rules misfiring &gt;30% get loosened. Missed cases get new rules. Hot-reload, no deploy.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>A2Z Suvidhaa · Risk Monitoring Platform · Internal use only</div>
+    <div>Live: <span class="url">risk-console.a2zsuvidhaa.in</span></div>
+  </div>
+
+</div>
+
+</body>
+</html>
